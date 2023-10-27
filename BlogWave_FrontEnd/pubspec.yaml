@@ -1,0 +1,65 @@
+name: blogwave_frontend
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  # Firebase
+  firebase_core: ^2.15.1
+  firebase_storage: ^11.2.6
+  # Others
+  flutter_spinkit: ^5.2.0
+  shared_preferences: ^2.2.0
+  go_router: ^10.1.0
+  flutter_riverpod: ^2.3.7
+  flutter_screenutil: ^5.9.0
+  lottie: ^2.6.0
+  webview_flutter: ^4.4.1
+  image_picker: ^1.0.4
+  cached_network_image: ^3.2.3
+  dotted_border: ^2.0.0+3
+  dio: ^5.3.3
+  flutter_markdown: ^0.6.18
+  intl: ^0.18.1
+  transparent_image: ^2.0.1
+  fluttertoast: ^8.2.2
+  shimmer: ^3.0.0 #
+  vibration: ^1.8.1 #
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/animation/
+    - assets/icons/
+    - assets/images/
+
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: PrimaryFonts
+      fonts:
+        - asset: assets/fonts/Ubuntu.ttf
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
+    - family: DancingScript
+      fonts:
+        - asset: assets/fonts/DancingScript.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
