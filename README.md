@@ -231,7 +231,7 @@ Certainly! Here's a table summarizing the API endpoints you provided:
 </p>
 <p align="center">
 <img src="screenshots/edit_blog.png" width="231" height="500" align="left">
-<img src="screenshots/log_out.png" width="231" height="500" align="center">
+<img src="screenshots/mail.jpg" width="231" height="500" align="center">
 <img src="screenshots/commet_screen_2.png" width="231" height="500" align="right">
 </p>
 
