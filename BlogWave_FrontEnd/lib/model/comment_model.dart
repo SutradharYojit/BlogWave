@@ -1,6 +1,6 @@
-import 'blogger_portfolio.dart';
-import 'user_data_model.dart';
 
+import 'blogger_portfolio.dart';
+// Data class of comment on the blogs
 class CommentModel {
   String? id;
   String? comment;

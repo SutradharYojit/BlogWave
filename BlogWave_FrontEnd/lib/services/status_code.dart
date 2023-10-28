@@ -6,6 +6,7 @@ class ServerStatusCodes {
   static const int unAuthorised = 401;         // HTTP 401 Unauthorized
   static const int pageNotFound = 404;         // HTTP 404 Not Found
   static const int timeOut = 504;              // HTTP 504 Gateway Timeout
+  static const int serverError = 500;          // HTTP 500 Internal Server Error
   static const int badRequest = 400;           // HTTP 400 Bad Request
   static const int forBid = 403;               // HTTP 403 Forbidden
 }

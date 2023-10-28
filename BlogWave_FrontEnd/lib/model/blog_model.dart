@@ -1,3 +1,4 @@
+// Blog Data model to store the data in List and access easily
 class BlogDataModel {
   String? id;
   String? title;
@@ -47,6 +48,7 @@ class BlogDataModel {
   }
 }
 
+// Data class is used to edit and update the blogs while passing the blog data in edit screen
 class BlogPreferences {
   final bool blogChoice;
   final BlogDataModel? blogData;

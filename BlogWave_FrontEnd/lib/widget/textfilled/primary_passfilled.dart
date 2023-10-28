@@ -8,6 +8,7 @@ class PrimaryPassField extends StatefulWidget {
   final String hintText;
   final String labelText;
   final Widget? prefixIcon;
+  final String? Function(String?)?validator;
 
   const PrimaryPassField({
     super.key,
@@ -15,6 +16,7 @@ class PrimaryPassField extends StatefulWidget {
     required this.hintText,
     required this.labelText,
     this.prefixIcon,
+    this.validator
   });
 
   @override
@@ -29,6 +31,7 @@ class _PassFieldState extends State<PrimaryPassField> {
     return TextFormField(
       obscureText: obSure,
       controller: widget.textPassCtrl,
+      validator: widget.validator,
       decoration: InputDecoration(
         prefixIcon: widget.prefixIcon,
         suffix: GestureDetector(
@@ -47,6 +50,8 @@ class _PassFieldState extends State<PrimaryPassField> {
         border: InputBorder.none,
         enabledBorder: buildOutlineInputBorder(),
         focusedBorder: buildOutlineInputBorder(),
+        errorBorder: buildErrorOutlineInputBorder(),
+        focusedErrorBorder: buildErrorOutlineInputBorder(),
         contentPadding: const EdgeInsets.all(17),
       ),
     );

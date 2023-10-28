@@ -1,9 +1,9 @@
 import 'dart:developer';
-import 'package:blogwave_frontend/services/services.dart';
 import 'package:blogwave_frontend/services/status_code.dart';
 import 'package:dio/dio.dart' as dio;
+import 'user_preferences.dart';
 
-// Class of the Api service , Define all the api functions Like GET, POST, PUT AND DELETE
+// Class of the Api service , Define all the api functions Like GET, POST AND DELETE
 class ApiServices {
   Future getApi({required String api, required Map<String, dynamic> body}) async {
     try {
@@ -24,28 +24,20 @@ class ApiServices {
   }
 
 //POST APi , Function to Send new Blog Data to the Database
-  Future postApi({required String api, required Map<String, dynamic> body}) async {
+  Future<ApiResponse> postApi({required String api, required Map<String, dynamic> body}) async {
     final response_1 = await dio.Dio().post(
       api,
       data: body,
       options: dio.Options(
+        validateStatus: (_) => true,
         headers: {
           "authorization": "Bearer ${UserPreferences.token}",
         },
       ),
     );
-
-    if (response_1.statusCode == ServerStatusCodes.addSuccess) {
-      var jsonData = response_1.data;
-      log('Status code: ${response_1.statusCode}');
-      // log('Response body: ${response_1.data}');
-      return jsonData;
-    } else {
-      log('Failed to add task. Status code: ${response_1.statusCode}');
-      log('Response body: ${response_1.data}');
-    }
+    return ApiResponse(data: response_1.data, statusCode: response_1.statusCode);
   }
-
+// DELETE APi , Function to Delete Blog Data from the Database
   Future deleteApi({required String api, required Map<String, dynamic> body}) async {
     final response_1 = await dio.Dio().delete(
       api,
@@ -60,12 +52,20 @@ class ApiServices {
     if (response_1.statusCode == ServerStatusCodes.addSuccess) {
       var jsonData = response_1.data;
       log('Status code: ${response_1.statusCode}');
-      // log('Response body: ${response_1.data}');
-
       return jsonData;
     } else {
       log('Failed to delete . Status code: ${response_1.statusCode}');
       log('Response body: ${response_1.data}');
     }
   }
+}
+
+class ApiResponse {
+  final dynamic data;
+  final dynamic statusCode;
+
+  ApiResponse({
+    required this.data,
+    required this.statusCode,
+  });
 }

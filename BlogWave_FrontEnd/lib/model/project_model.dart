@@ -1,3 +1,4 @@
+// data class of user Projects
 class ProjectModel {
   String? id;
   String? title;
@@ -42,7 +43,7 @@ class ProjectModel {
     return data;
   }
 }
-
+// data class is used to pass the data from one screen to another screen
 class ProjectDetailsModel {
   ProjectDetailsModel({
     required this.currentUserId,
@@ -52,7 +53,7 @@ class ProjectDetailsModel {
   final String currentUserId;
   final ProjectModel projectData;
 }
-
+// Data class helps to edit the project details and create a new project
 class EditProject {
   EditProject({
     required this.projectDetailsScreen,

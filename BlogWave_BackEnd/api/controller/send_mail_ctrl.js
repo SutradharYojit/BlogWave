@@ -1,5 +1,7 @@
 const nodemailer = require("nodemailer");
 
+
+// Create a transporter for sending emails using Gmail service and authentication.
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -56,6 +58,7 @@ const sendEmail = async (req, res, next) => {
         </html>` // html body
     }).then((method) => {
         console.log("Message sent: %s", method.messageId);
+           // Log a success message indicating that the email was sent successfully.
         return res.status(200).json({
             Message: "Mail Send Successfully"
         });

@@ -2,7 +2,7 @@ const sqConnect = require('../connection/database_connection')
 const userModel = require('./users_model');
 const Sequelize = require('sequelize');
 
-
+// Define the "blogs" table using Sequelize
 const blogTable = sqConnect.define('blogs', {
     id: {
         type: Sequelize.UUID,
@@ -31,7 +31,7 @@ const blogTable = sqConnect.define('blogs', {
     },
 });
 
-
+// Establish a relationship between the "blogs" table and the "users" table
 userModel.hasMany(blogTable, {
     foriegnKey: {
         allowNull: false

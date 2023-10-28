@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:transparent_image/transparent_image.dart';
 import '../../model/model.dart';
 import '../../resources/resources.dart';
 import '../../services/utils.dart';
@@ -12,32 +10,7 @@ import '../view.dart';
 class BlogDetailsScreen extends StatelessWidget {
   const BlogDetailsScreen({super.key, required this.blogData});
 
-  final BlogDataModel blogData;
-  final String markdownData = """
-  # Flutter Markdown Example
-
-    This is an example of using Markdown in a Flutter app.
-
-    ## Formatting
-
-    - *Italic*
-    - **Bold**
-    - `Code`
-
-    ## Lists
-
-    1. First item
-    2. Second item
-    3. Third item
-
-    ## Links
-
-    [OpenAI](https://www.openai.com)
-
-    ## Images
-
-    ![Flutter Logo](https://flutter.dev/assets/homepage/logo/flutter-lockup-cqf-98ccdf76af1df69a4d609a73e12f44e06b874974b8eaf6fbb7e72b86553682ca0.png)
-    """;
+  final BlogDataModel blogData; //Get the blog data from blog Listing screen
 
   @override
   Widget build(BuildContext context) {
@@ -54,48 +27,36 @@ class BlogDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             Padding(
-               padding:   EdgeInsets.all(15.w),
-               child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.start,
-
-                 children: [
+              Padding(
+                padding: EdgeInsets.all(15.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Padding(
-                      padding: const EdgeInsets.only( top:5),
+                      padding: const EdgeInsets.only(top: 5),
                       child: Text(
                         "Published : ${Utils.formatDate(blogData.createdAt!)}",
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: ColorManager.greyColor
-                        ),
+                        style: TextStyle(fontSize: 14.sp, color: ColorManager.greyColor),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 5.0),
                       child: Text(
                         blogData.title!,
-                        style: TextStyle(
-                          fontSize: 25.sp,
-                          color: ColorManager.gradientDarkTealColor
-                        ),
+                        style: TextStyle(fontSize: 25.sp, color: ColorManager.gradientDarkTealColor),
                       ),
                     ),
                   ],
-               ),
-             ),
-
+                ),
+              ),
               Container(
                 constraints: BoxConstraints(
                   minHeight: 250.h,
                 ),
-                child: FadeInImage(
-                  width: double.infinity,
-                  placeholder: MemoryImage(kTransparentImage),
-                  image: NetworkImage(
-                    blogData.blogImgUrl!,
-                  ),
-                  fit: BoxFit.cover,
-                  height: 200,
+                // refactor widget of cache Network Images load blog image on error return default blank image
+                child: CacheImage(
+                  imgUrl: blogData.blogImgUrl!,
+                  errorWidget: Center(child: Image.asset(ImageAssets.noImg)),
                 ),
               ),
               Padding(
@@ -103,6 +64,7 @@ class BlogDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Listing the Blog Tags
                     Padding(
                       padding: EdgeInsets.only(top: 10.r),
                       child: GridView.builder(
@@ -147,6 +109,7 @@ class BlogDetailsScreen extends StatelessWidget {
                     ),
                     SizedBox(
                       height: 500,
+                      // MardDown widget helps to read the text of .md file (rich text formatting)
                       child: Markdown(
                         data: blogData.description!,
                         styleSheet: MarkdownStyleSheet(
@@ -166,6 +129,7 @@ class BlogDetailsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: ColorManager.rgbWhiteColor,
         onPressed: () {
+          // bottom Sheet to open comment Screen on blog Post
           buildShowModalBottomSheet(
             context,
             widget: CommentScreen(blogId: blogData.id!),

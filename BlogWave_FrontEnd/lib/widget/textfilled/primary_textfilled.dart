@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 
 import '../../resources/resources.dart';
+
 // this primary textfilled where we use this in all over the app
 class PrimaryTextFilled extends StatelessWidget {
   const PrimaryTextFilled({
@@ -21,6 +21,7 @@ class PrimaryTextFilled extends StatelessWidget {
     this.onFieldSubmitted,
     this.textInputAction,
     this.textCapitalization,
+    this.validator,
   });
 
   final TextEditingController controller;
@@ -38,38 +39,48 @@ class PrimaryTextFilled extends StatelessWidget {
   final TextInputAction? textInputAction;
   final TextCapitalization? textCapitalization;
   final void Function(String)? onFieldSubmitted;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator: validator,
       focusNode: focusNode,
       readOnly: readOnly ?? false,
       autofocus: autofocus ?? false,
       controller: controller,
-      textCapitalization: textCapitalization??TextCapitalization.none,
+      textCapitalization: textCapitalization ?? TextCapitalization.none,
       onFieldSubmitted: onFieldSubmitted,
-      textInputAction: textInputAction?? TextInputAction.next,
+      textInputAction: textInputAction ?? TextInputAction.next,
       keyboardType: keyboardType,
       maxLines: maxLines ?? null,
       maxLength: maxLength,
       decoration: InputDecoration(
-          prefixText: prefixText,
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          labelText: labelText,
-          hintText: hintText,
-          enabledBorder: buildOutlineInputBorder(),
-          focusedBorder: buildOutlineInputBorder(),
-          // border: buildOutlineInputBorder(),
-          errorBorder: buildOutlineInputBorder(),
-          focusedErrorBorder: buildOutlineInputBorder()),
+        prefixText: prefixText,
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        labelText: labelText,
+        hintText: hintText,
+        enabledBorder: buildOutlineInputBorder(),
+        focusedBorder: buildOutlineInputBorder(),
+        // border: buildOutlineInputBorder(),
+        errorBorder: buildErrorOutlineInputBorder(),
+        focusedErrorBorder: buildErrorOutlineInputBorder(),
+      ),
     );
   }
 }
 
 OutlineInputBorder buildOutlineInputBorder() {
   return OutlineInputBorder(
-    borderSide:   const BorderSide(color: ColorManager.gradientDarkTealColor),
+    borderSide: const BorderSide(color: ColorManager.gradientDarkTealColor),
+    borderRadius: BorderRadius.circular(15),
+  );
+}
+
+OutlineInputBorder buildErrorOutlineInputBorder() {
+  return OutlineInputBorder(
+    borderSide: const BorderSide(color: ColorManager.redColor),
     borderRadius: BorderRadius.circular(15),
   );
 }

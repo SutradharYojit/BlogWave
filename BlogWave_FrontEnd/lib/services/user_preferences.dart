@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +15,7 @@ class UserPreferences {
     showDialog(
       context: context,
       builder: (context) {
-        return const Center(child: Loading());
+        return const Center(child: LoadingBar());
       },
     );
     final SharedPreferences userData = await SharedPreferences.getInstance();

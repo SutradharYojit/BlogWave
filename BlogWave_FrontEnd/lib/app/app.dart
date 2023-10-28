@@ -1,8 +1,8 @@
- // Importing necessary packages and resources
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../resources/resources.dart';
-import '../routes/route.dart';
+// Importing necessary packages and resources
+import 'package:flutter/material.dart';  // Import the Flutter material package for building UI
+import 'package:flutter_screenutil/flutter_screenutil.dart';  // Import the Flutter ScreenUtil package for responsive design
+import '../resources/resources.dart';  // Import your resource file
+import '../routes/route.dart';  // Import your route configuration
 
 // Define the main application class
 class MyApp extends StatelessWidget {
@@ -17,17 +17,17 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: false,  // Disable the debug banner
           theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(seedColor: ColorManager.gradientDarkTealColor),
-            fontFamily: "PrimaryFonts",
+            useMaterial3: true,  // Enable Material 3 design
+            colorScheme: ColorScheme.fromSeed(seedColor: ColorManager.gradientDarkTealColor),  // Define the color scheme
+            fontFamily: "PrimaryFonts",  // Set the primary font family
             cardTheme: const CardTheme(
-              surfaceTintColor: ColorManager.whiteColor,
+              surfaceTintColor: ColorManager.whiteColor,  // Define card theme properties
             ),
-            scaffoldBackgroundColor: ColorManager.whiteColor,
+            scaffoldBackgroundColor: ColorManager.whiteColor,  // Set the scaffold background color
           ),
-          routerConfig: router, // Define the app's router configuration
+          routerConfig: router,  // Define the app's router configuration
         );
       },
     );

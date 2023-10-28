@@ -2,12 +2,7 @@ const sqConnect=require('../connection/database_connection')
 
 const Sequelize = require('sequelize');
 
-// const sequelize = new Sequelize('blog_app', 'postgres', '123456', {
-//     host: 'localhost',
-//     port_1: '5432',
-//     dialect: 'postgres',
-//     logging: false
-// })
+// Define the "User Table" table using Sequelize
 
 const UserTable = sqConnect.define('users', {
     id: {

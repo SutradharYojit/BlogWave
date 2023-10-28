@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:blogwave_frontend/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,24 +5,27 @@ import 'package:go_router/go_router.dart';
 import '../../model/model.dart';
 import '../../resources/resources.dart';
 import '../../services/services.dart';
+import '../../widget/project_list_tile.dart';
 import '../../widget/widget.dart';
 import '../view.dart';
 
 class ProjectDetailsScreen extends StatelessWidget {
-  ProjectDetailsScreen({
+  const ProjectDetailsScreen({
     super.key,
     required this.projectDetails,
   });
 
+  // Data class to helps to get the project details
   final ProjectDetailsModel projectDetails;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Project Detail"),
+        title: const Text(StringManager.projectDetailsAppBarTitle),
         actions: [
           Visibility(
+            // Show the edit button only if the current user's ID matches the project owner's ID.
             visible: UserPreferences.userId == projectDetails.projectData.userId!,
             child: IconButton(
               onPressed: () {
@@ -35,42 +37,42 @@ class ProjectDetailsScreen extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit), // Display an edit icon.
             ),
           ),
           Visibility(
+            // Show the delete button only if the current user's ID matches the project owner's ID.
             visible: UserPreferences.userId == projectDetails.projectData.userId!,
             child: IconButton(
               onPressed: () {
                 dialogBox(
                   context,
-                  headLine: "Are you sure, you want to delete this project?",
+                  headLine: StringManager.deleteProjectHeadLineTxt,
                   onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const Center(child: Loading());
-                        });
+                    loading(context); // Display a loading indicator.
+
+                    // Make an API request to delete the project.
                     ApiServices().deleteApi(
-                      api: "${APIConstants.baseUrl}Project/deleteProject",
+                      api: "${APIConstants.baseUrl}Project/deleteProject", // API endpoint for deleting a project.
                       body: {
-                        "id": projectDetails.projectData.id!,
+                        ApiRequestBody.apiId: projectDetails.projectData.id!, // Pass the project's ID for deletion.
                       },
                     ).then(
-                      (value) {
-                        WarningBar.snackMessage(context, message: StringManager.updateProjectSuccessTxt, color: ColorManager.greenColor);
-                        Navigator.pop(context); // for Project Details
-                        Navigator.pop(context); // For Loading
-                        Navigator.pop(context); // for Project Details
+                          (value) {
+                        WarningBar.snackMessage(context, message: StringManager.deleteProjectSuccessTxt, color: ColorManager.greenColor);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
                       },
                     );
                   },
                   button: "Yes",
                 );
               },
-              icon: const Icon(Icons.delete_outline_rounded),
+              icon: const Icon(Icons.delete_outline_rounded), // Display a delete icon.
             ),
           )
+
         ],
       ),
       body: SafeArea(
@@ -80,11 +82,11 @@ class ProjectDetailsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ProjectDetailCard(
-                headline: "Title",
+                headline:StringManager.titleTxt,
                 body: Text(projectDetails.projectData.title!),
               ),
               ProjectDetailCard(
-                headline: "Description",
+                headline: StringManager.descTxt,
                 body: Text(projectDetails.projectData.description!),
               ),
               Padding(
@@ -96,7 +98,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Technologies",
+                          StringManager.techTxt,
                           style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
                         ),
                         Padding(
@@ -120,17 +122,17 @@ class ProjectDetailsScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  log("web View");
                   context.push(
-                    RoutesName.webViewScreen,
+                    RoutesName.webViewScreen, // Navigate to the WebViewScreen.
                     extra: WebViewData(
-                      title: projectDetails.projectData.title!,
-                      url: projectDetails.projectData.projectUrl!,
+                      title: projectDetails.projectData.title!, // Set the title for the web view screen.
+                      url: projectDetails.projectData.projectUrl!, // Set the URL to be displayed in the web view.
                     ),
                   );
+
                 },
                 child: ProjectDetailCard(
-                  headline: "Project URL",
+                  headline: StringManager.projectUrlTxt,
                   body: Row(
                     children: [
                       Image.asset(
@@ -166,36 +168,4 @@ class ProjectDetailsScreen extends StatelessWidget {
   }
 }
 
-class ProjectDetailCard extends StatelessWidget {
-  const ProjectDetailCard({
-    super.key,
-    required this.headline,
-    required this.body,
-  });
 
-  final String headline;
-  final Widget body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.r),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(),
-              Text(
-                headline,
-                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
-              ),
-              Padding(padding: EdgeInsets.only(top: 4.r), child: body)
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

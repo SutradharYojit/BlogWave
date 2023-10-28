@@ -1,4 +1,6 @@
+
 class BlogDataList {
+  // List of categories will adding blogs
   static List<String> blogCategory = [
     "Lifestyle",
     "Health and Wellness",

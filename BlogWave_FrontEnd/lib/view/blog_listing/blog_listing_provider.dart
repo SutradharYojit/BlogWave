@@ -28,6 +28,7 @@ class BlogData extends StateNotifier<List<BlogDataModel>> {
   // function to remove the blog data from the list
   Future<void> blogDelete(String blogId, int index) async {
     state.removeAt(index);
+    // APi top delete the blog
     ApiServices().deleteApi(
       api: "${APIConstants.baseUrl}blog/deleteBlog",
       body: {"id": blogId},

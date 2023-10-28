@@ -20,6 +20,7 @@ class IconAssets {
 
 class ImageAssets {
   static const String blankProfileImg = "$IMAGES_PATH/img.png";
+  static const String noImg = "$IMAGES_PATH/noimage.jpg";
 
 }
 

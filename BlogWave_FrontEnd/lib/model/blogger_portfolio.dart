@@ -1,3 +1,4 @@
+// Data class to get the blogger portfolio details
 class BloggerPortfolio {
   String? id;
   String? userName;

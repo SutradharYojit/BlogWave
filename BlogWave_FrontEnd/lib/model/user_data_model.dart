@@ -1,3 +1,4 @@
+// Data class to get the data of current user logged in app
 class UserDataModel {
   bool? success;
   UserData? userData;

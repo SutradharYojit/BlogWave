@@ -1,19 +1,11 @@
-const http = require('http')
-// const Sequelize = require('sequelize')
-const app = require('./server')
-const sqConnect=require('./api/connection/database_connection')
-const eseHe=require('./api/model/project_model');
+// Import required modules
+const http = require('http');
+const app = require('./server'); // Import the 'server.js' file
+const sqConnect = require('./api/connection/database_connection'); // Import database connection setup
 
-const port = process.env.PORT || 1234;
+const port = process.env.PORT || 1234; // Define the server port
 
-// const sequelize = new Sequelize('blog_app', 'postgres', '123456', {
-//     host: 'localhost',
-//     port_1: '5432',
-//     dialect: 'postgres',
-//     logging: false
-// })
-
-
+// Function to establish a connection to the database
 async function connect() {
     try {
         await sqConnect.authenticate();
@@ -22,14 +14,14 @@ async function connect() {
         console.error('Unable to connect to the database:', error);
     }
 }
-connect();
+connect(); // Call the 'connect' function to establish the database connection
 
-const server = http.createServer(app)
+// Create an HTTP server using the 'app' defined in 'server.js'
+const server = http.createServer(app);
 
-
+// Synchronize the database and start the server on the specified port
 sqConnect.sync().then(() => {
     server.listen(port, () => { 
         console.log(`Server running on port ${port}`);
     });
 });
-

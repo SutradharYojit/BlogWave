@@ -10,6 +10,7 @@ import '../../services/services.dart';
 import '../../widget/widget.dart';
 import 'blog_listing_provider.dart';
 
+// enum class for pop menu items
 enum EditAuth {
   edit,
   delete,
@@ -23,21 +24,22 @@ class BlogListingScreen extends ConsumerStatefulWidget {
 }
 
 class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with SingleTickerProviderStateMixin {
+
   EditAuth? selectedItem;
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController(); // Create a ScrollController to manage scrolling in the widget.
   late final AnimationController _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 700),
+    vsync: this, // Synchronize the animation with the widget's lifecycle.
+    duration: const Duration(milliseconds: 700), // Set the duration for the animation.
   );
   late final Animation<Offset> position = Tween<Offset>(
-    begin: const Offset(10, 0),
-    end: const Offset(0, 0),
+    begin: const Offset(10, 0), // Define the starting position for the animation.
+    end: const Offset(0, 0), // Define the ending position for the animation.
   ).animate(
-    CurvedAnimation(parent: _animationController, curve: Curves.linear),
+    CurvedAnimation(parent: _animationController, curve: Curves.linear), // Create a curved animation.
   );
 
   Future<void> getData() async {
-    await ref.read(blogDataList.notifier).getBlogs();
+    await ref.read(blogDataList.notifier).getBlogs(); // Fetch data for the widget asynchronously.
   }
 
   @override
@@ -45,27 +47,26 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.offset > 1000) {
-        _animationController.forward();
+        _animationController.forward(); // Start the animation when scrolling position is over 1000.
       } else {
-        _animationController.reverse();
+        _animationController.reverse(); // Reverse the animation when scrolling position is less than or equal to 1000.
       }
     });
-    getData();
+    getData(); // Call the asynchronous function to load data when the widget is initialized.
   }
 
   String formatDate(String date) {
     // date = '2021-01-26T03:17:00.000000Z';
-    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('MM/dd/yyyy');
-    var outputDate = outputFormat.format(inputDate);
-    print(outputDate);
-    return outputDate;
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date); // Parse the input date string.
+    var inputDate = DateTime.parse(parseDate.toString()); // Convert parsed date to DateTime object.
+    var outputFormat = DateFormat('MM/dd/yyyy'); // Define the desired output date format.
+    var outputDate = outputFormat.format(inputDate); // Format the date in the desired output format.
+    print(outputDate); // Print the formatted date to the console.
+    return outputDate; // Return the formatted date as a string.
   }
-
   @override
   Widget build(BuildContext context) {
-    final blogList = ref.watch(blogDataList);
+    final blogList = ref.watch(blogDataList); // data of the blog list
     return Scaffold(
       appBar: AppBar(
         title: const AppBarTitle(title: StringManager.blogsAppBarTitle),
@@ -73,6 +74,7 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(15.0.w),
+          // widget to pull and refresh the screen
           child: RefreshIndicator(
             onRefresh: ref.read(blogDataList.notifier).getBlogs,
             child: Column(
@@ -108,7 +110,7 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
                                             Padding(
                                               padding: const EdgeInsets.symmetric(vertical: 15),
                                               child: Text(
-                                                formatDate(blogList[index].createdAt!),
+                                                formatDate(blogList[index].createdAt!), //date parsing function
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   color: ColorManager.greyColor,
@@ -117,14 +119,14 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
                                             ),
                                             Visibility(
                                               visible: UserPreferences.userId == blogList[index].userId,
-                                              // When edit update functionality is enabled when the authorId and CurrentUser Id will be match
+                                              // When edit update functionality is enabled when the authorId and CurrentUser Id will be match i.e only the author can edit or delete the blog
                                               child: PopupMenuButton(
                                                 initialValue: selectedItem,
                                                 onSelected: (EditAuth item) {
                                                   if (item == EditAuth.edit) {
+                                                    //pass the blag data to add blog screen so author can edit the blogs
                                                     context.push(
                                                       RoutesName.addBlogScreen,
-                                                      //pass the blag data to add blog screen
                                                       extra: BlogPreferences(
                                                         blogChoice: true,
                                                         blogData: blogList[index],
@@ -133,17 +135,17 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
                                                   } else {
                                                     dialogBox(
                                                       context,
-                                                      headLine: "Are you sure, you want to delete Blog?",
+                                                      headLine: StringManager.deleteBLogHeadLineTxt,
                                                       onPressed: () {
+                                                        // function to delete the blog
                                                         ref
                                                             .read(blogDataList.notifier)
                                                             .blogDelete(blogList[index].id!, index);
-                                                        buildShowToast(toastMessage: "Blog deleted Successfully");
+                                                        buildShowToast(toastMessage:StringManager.deleteBLogSuccessTxt );
                                                         Navigator.pop(context);
                                                       },
-                                                      button: "Delete",
+                                                      button:StringManager.deleteTxt ,
                                                     );
-                                                    // function to delete the blog
 
                                                   }
                                                 },
@@ -183,7 +185,7 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
                                           padding: EdgeInsets.symmetric(vertical: 7.w),
                                           child: Text(
                                             blogList[index].title!,
-                                            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w800),
+                                            style: TextStyle(fontSize: 15.sp),
                                           ),
                                         ),
                                       ],
@@ -195,9 +197,8 @@ class _BlogListingScreenState extends ConsumerState<BlogListingScreen> with Sing
                           );
                         },
                       ),
-                      //scroll animation
-
                       Positioned(
+                        // Up scroll animation
                         bottom: 15.h,
                         right: 0.h,
                         child: UpAnimation(position: position, scrollController: _scrollController),

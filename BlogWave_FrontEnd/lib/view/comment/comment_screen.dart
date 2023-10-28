@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:blogwave_frontend/services/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,7 @@ import '../../widget/widget.dart';
 class CommentScreen extends StatefulWidget {
   const CommentScreen({super.key, required this.blogId});
 
+  // getting the blog ID to display the comment on the specific blogs
   final String blogId;
 
   @override
@@ -20,37 +22,38 @@ class CommentScreen extends StatefulWidget {
 }
 
 class _CommentScreenState extends State<CommentScreen> {
+// Create a TextEditingController to manage the text input for comments.
   final TextEditingController _commentCtrl = TextEditingController();
 
+// Create a ValueNotifier to hold and notify changes in the list of CommentModel objects.
   ValueNotifier<List<CommentModel>> commentData = ValueNotifier([]);
 
+// Define a function to fetch a list of CommentModel objects.
   Future<List<CommentModel>> getComments() async {
-    final List<CommentModel> bloggersList = [];
-    bloggersList.clear();
+    final List<CommentModel> bloggersList = []; // Create an empty list to store CommentModel objects.
+
+    bloggersList.clear(); // Clear the list to ensure it's empty before populating.
+
+    // Make an API request to get comments for a specific blog using the ApiServices class.
     final data = await ApiServices().getApi(
-      api: "${APIConstants.baseUrl}comment/getComment",
-      body: {"blogId": widget.blogId},
+      api: "${APIConstants.baseUrl}comment/getComment", // API endpoint URL.
+      body: {ApiRequestBody.apiBlogId: widget.blogId}, // Pass the blog ID as a request parameter.
     );
+
+    // Iterate over the data obtained from the API response and convert it into CommentModel objects.
     for (Map<String, dynamic> i in data) {
-      bloggersList.add(CommentModel.fromJson(i));
+      bloggersList.add(CommentModel.fromJson(i)); // Create CommentModel objects and add them to the list.
     }
-    return bloggersList;
+    return bloggersList; // Return the list of CommentModel objects.
   }
-  String formatDate(String date) {
-    DateTime parseDate = new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('MM/dd/yyyy');
-    var outputDate = outputFormat.format(inputDate);
-    print(outputDate);
-    return outputDate;
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Comments"),
+        title: const Text(StringManager.commentAppBarTitle),
       ),
       body: SafeArea(
         child: Padding(
@@ -58,76 +61,75 @@ class _CommentScreenState extends State<CommentScreen> {
           child: Column(
             children: [
               FutureBuilder(
-                future: getComments(),
+                future: getComments(), // Define the future function to be executed to fetch comments.
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularLoading();
+                    return const CircularLoading(); // Display a loading indicator while waiting for data.
                   } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
+                    return Text('Error: ${snapshot.error}'); // Display an error message if there's an error.
                   } else {
-                    commentData.value = snapshot.data as List<CommentModel>;
+                    commentData.value = snapshot.data as List<CommentModel>; // Set the comment data using the snapshot data.
+
                     return ValueListenableBuilder(
                       valueListenable: commentData,
                       builder: (context, value, child) {
                         return value.isEmpty
                             ? Expanded(
-                                child: Center(
-                                  child: Text(
-                                    "No Comments",
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w500,
+                          child: Center(
+                            child: Text(
+                              StringManager.noCommentsTxt, // Display a message for no comments.
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        )
+                            : Expanded(
+                          child: ListView.builder(
+                            itemCount: value.length, // Number of items to display in the list.
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {
+                                    context.push(
+                                      RoutesName.bloggerProfileScreen, // Navigate to the blogger's profile screen.
+                                      extra: value[index].user, // Pass the blogger's user data as an extra.
+                                    );
+                                  },
+                                  child: ClipOval(
+                                    child: SizedBox.fromSize(
+                                      size: Size.fromRadius(25.w), // Set the image radius.
+                                      child: CachedNetworkImage(
+                                        imageUrl: value[index].user!.profileUrl!, // Display the blogger's profile image.
+                                        fit: BoxFit.cover,
+                                        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                                          child: CircularProgressIndicator(
+                                            value: downloadProgress.progress,
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) => Image.asset(ImageAssets.blankProfileImg),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              )
-                            : Expanded(
-                                child: ListView.builder(
-                                  itemCount: value.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-
-                                      contentPadding: EdgeInsets.zero,
-                                      leading: InkWell(
-                                        borderRadius: BorderRadius.circular(10),
-                                        onTap: () {
-                                          context.push(
-                                            RoutesName.bloggerProfileScreen,
-                                            extra: value[index].user,
-                                          );
-                                        },
-                                        child: ClipOval(
-                                          child: SizedBox.fromSize(
-                                            size: Size.fromRadius(25.w), // Image radius
-                                            child: CachedNetworkImage(
-                                              imageUrl: value[index].user!.profileUrl!,
-                                              fit: BoxFit.cover,
-                                              progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                                                child: CircularProgressIndicator(
-                                                  value: downloadProgress.progress,
-                                                ),
-                                              ),
-                                              errorWidget: (context, url, error) =>
-                                                  Image.asset(ImageAssets.blankProfileImg),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        value[index].user!.userName!,
-                                        style: const TextStyle(fontWeight: FontWeight.w600),
-                                      ),
-                                      subtitle: Text(
-                                        value[index].comment!,
-                                        style: TextStyle(
-                                          color: ColorManager.grey800Color,
-                                        ),
-                                      ),
-                                      trailing: Text(formatDate(value[index].createdAt!)),
-                                    );
-                                  },
+                                title: Text(
+                                  value[index].user!.userName!, // Display the blogger's username.
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
+                                subtitle: Text(
+                                  value[index].comment!, // Display the comment.
+                                  style: TextStyle(
+                                    color: ColorManager.grey800Color,
+                                  ),
+                                ),
+                                trailing: Text(Utils.formatDate(value[index].createdAt!)), // Display the comment's creation date.
                               );
+                            },
+                          ),
+                        );
                       },
                     );
                   }
@@ -152,21 +154,28 @@ class _CommentScreenState extends State<CommentScreen> {
                         ),
                         suffixIcon: IconButton(
                           onPressed: () {
+                            // Make an API POST request to add a new comment.
                             ApiServices().postApi(
-                              api: "${APIConstants.baseUrl}comment/addComment",
+                              api: "${APIConstants.baseUrl}comment/addComment", // The API endpoint URL for adding a comment.
                               body: {
-                                "description": _commentCtrl.text.trim(),
-                                "blogId": widget.blogId,
-                                "userId": UserPreferences.userId
+                                ApiRequestBody.apiDescription: _commentCtrl.text.trim(), // Trimmed comment text.
+                                ApiRequestBody.apiBlogId: widget.blogId, // Pass the blog ID as a request parameter.
+                                ApiRequestBody.apiUserId: UserPreferences.userId, // Pass the user's ID as a request parameter.
                               },
                             ).then(
-                              (data) {
-                                log(data.toString());
-                                // commentData.value.insert(0, CommentModel.fromJson(data));
-                                _commentCtrl.clear();
-                                setState(() {});
+                                  (data) {
+                                if (data.statusCode == ServerStatusCodes.addSuccess) {
+                                  _commentCtrl.clear(); // Clear the comment input field.
+                                  setState(() {}); // Trigger a UI update to reflect the new comment.
+                                } else {
+                                  // Show a warning message in a snack bar in case of an error.
+                                  WarningBar.snackMessage(context,
+                                      message:  StringManager.wentWrongTxt, color: ColorManager.greenColor);
+                                  Navigator.pop(context); // Close the current screen in case of an error.
+                                }
                               },
                             );
+
                           },
                           icon: CircleAvatar(
                             backgroundColor: ColorManager.rgbWhiteColor,

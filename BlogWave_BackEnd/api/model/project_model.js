@@ -2,6 +2,7 @@ const sqConnect = require('../connection/database_connection')
 const userModel = require('./users_model');
 const Sequelize = require('sequelize');
 
+// Define the "PROJECT TABLE" table using Sequelize
 
 const projectTable = sqConnect.define('projects', {
     id: {
@@ -27,7 +28,7 @@ const projectTable = sqConnect.define('projects', {
     },
 });
 
-
+// Establish a relationship between the "projects" table and the "users" table
 userModel.hasMany(projectTable, {
     foriegnKey: {
         allowNull: false

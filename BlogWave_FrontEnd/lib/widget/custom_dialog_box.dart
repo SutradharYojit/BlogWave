@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../resources/color_manager.dart';
-
 Future<dynamic> dialogBox(
     BuildContext context, {
-      required String headLine,
-      required String button,
-      required VoidCallback onPressed,
+      required String headLine, // Dialog headline
+      required String button, // Text on the action button
+      required VoidCallback onPressed, // Callback when the action button is pressed
     }) {
   return showDialog(
     context: context,
@@ -23,9 +22,9 @@ Future<dynamic> dialogBox(
 class CustomDialogBox extends StatelessWidget {
   const CustomDialogBox({
     super.key,
-    required this.headLine,
-    required this.button,
-    required this.onPressed,
+    required this.headLine, // Headline text to display
+    required this.button, // Text on the action button
+    required this.onPressed, // Callback when the action button is pressed
   });
 
   final VoidCallback onPressed;
@@ -44,7 +43,7 @@ class CustomDialogBox extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              headLine,
+              headLine, // Display the provided headline
               style: TextStyle(fontSize: 15.sp),
             ),
             Row(
@@ -55,21 +54,22 @@ class CustomDialogBox extends StatelessWidget {
                     fixedSize: Size(90.w, 20.h),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20).w),
                   ),
-                  onPressed: onPressed,
+                  onPressed: onPressed, // Execute the provided callback
                   child: Text(
-                    button,
+                    button, // Display the provided button text
                     style: TextStyle(fontSize: 13.sp),
                   ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      fixedSize: Size(90.w, 20.h),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20).w)),
+                    fixedSize: Size(90.w, 20.h),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20).w),
+                  ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close the dialog
                   },
                   child: Text(
-                    "Close",
+                    "Close", // Close button text
                     style: TextStyle(fontSize: 14.sp),
                   ),
                 ),
@@ -81,3 +81,4 @@ class CustomDialogBox extends StatelessWidget {
     );
   }
 }
+

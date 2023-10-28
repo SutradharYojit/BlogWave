@@ -1,5 +1,3 @@
-import 'dart:developer';
-import 'package:blogwave_frontend/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import '../../model/model.dart';
 import '../../resources/resources.dart';
+import '../../routes/routes_name.dart';
 import '../../services/services.dart';
 import '../../widget/widget.dart';
 import 'user_profile_provider.dart';
@@ -24,6 +23,7 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
   @override
   void initState() {
     super.initState();
+    // fetch user profile information and make lodinf false
     ref.read(userDataList.notifier).getUser().then((value) {
       loading.value = false;
     });
@@ -76,7 +76,7 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
                                   children: [
                                     Text(
                                       userData.first.userData!.userName!,
-                                      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
+                                      style: TextStyle(fontSize: 15.sp, ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
@@ -117,7 +117,6 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
                               onTap: () {
-                                log("press edit profile");
                                 context.push(RoutesName.editProfileScreen);
                               },
                               child: ListTile(
@@ -136,7 +135,6 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
                               onTap: () {
-                                log("User Project");
                                 context.push(RoutesName.userProjectListingScreen);
                               },
                               child: ListTile(
@@ -155,7 +153,6 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
                               onTap: () {
-                                log("Add blogs");
                                 context.push(RoutesName.addBlogScreen, extra: BlogPreferences(blogChoice: false));
                               },
                               child: ListTile(
@@ -174,11 +171,11 @@ class _BloggerProfileScreenState extends ConsumerState<UserProfileScreen> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
                               onTap: () {
-                                log("Log out");
                                 dialogBox(
                                   context,
                                   headLine: "Are you sure, you want to log out?",
                                   onPressed: () {
+                                    // Logout function
                                     UserPreferences().logOutsetData(context);
                                   },
                                   button: "Log out",

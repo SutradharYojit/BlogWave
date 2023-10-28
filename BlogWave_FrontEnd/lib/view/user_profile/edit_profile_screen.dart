@@ -23,8 +23,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final TextEditingController _userNameCtrl = TextEditingController();
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _bioCtrl = TextEditingController();
-  ValueNotifier<bool> editProfile = ValueNotifier(true); // to manage the focus
-  ValueNotifier<String> imgUrl = ValueNotifier(""); // to manage the focus
+  final _formKey = GlobalKey<FormState>();
+  ValueNotifier<bool> editProfile = ValueNotifier(true); // To manage the focus
+  ValueNotifier<String> imgUrl = ValueNotifier(""); // To manage the focus
   final ImagePicker picker = ImagePicker();
   File? imageFile;
   String? imageUrl;
@@ -38,7 +39,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       String imageName = base64UrlEncode(values);
       final String imagePath = 'usersProfile/${UserPreferences.userId}/$imageName';
       UploadTask uploadTask = storage.ref().child(imagePath).putFile(image!);
+      // Wait for the upload task to complete
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+      // Get the download URL of the uploaded image
       final String imageUrl = await taskSnapshot.ref.getDownloadURL();
       return imageUrl;
     } catch (e) {
@@ -54,10 +57,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   void updateData() {
     final userData = ref.read(userDataList);
+    // Update the text fields with user data
     _userNameCtrl.text = userData.first.userData!.userName!;
     _emailCtrl.text = userData.first.userData!.email!;
     _bioCtrl.text = userData.first.userData!.bio!;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,145 +92,159 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               child: ValueListenableBuilder(
                 valueListenable: editProfile,
                 builder: (context, value, child) {
-                  return Column(
-                    children: [
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final image = ref.read(userDataList.notifier).image;
-                          imgUrl.value = image ?? "";
-                          return Center(
-                            child: Stack(
-                              children: [
-                                ClipOval(
-                                  child: SizedBox.fromSize(
-                                    size: Size.fromRadius(50.w), // Image radius
-                                    child: CachedNetworkImage(
-                                      imageUrl: image ?? "",
-                                      fit: BoxFit.cover,
-                                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                                        child: CircularProgressIndicator(value: downloadProgress.progress),
-                                      ),
-                                      errorWidget: (context, url, error) => Icon(
-                                        Icons.account_circle_outlined,
-                                        size: 78.h,
-                                        color: ColorManager.greyColor,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Visibility(
-                                    visible: !value,
-                                    child: CircleAvatar(
-                                      radius: 17.r,
-                                      child: IconButton(
-                                        onPressed: () async {
-                                          await picker
-                                              .pickImage(
-                                            source: ImageSource.gallery,
-                                          )
-                                              .then((image) async {
-                                            if (image != null) {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return const Center(
-                                                    child: Loading(),
-                                                  );
-                                                },
-                                              );
-                                              setState(() {
-                                                imageFile = File(image.path);
-                                              });
-                                              final imageUrl = await uploadImage();
-                                              imgUrl.value = imageUrl;
-                                              Navigator.pop(context);
-                                            }
-                                          });
-                                        },
-                                        icon: Center(
-                                          child: Icon(
-                                            Icons.camera,
-                                            size: 18.h,
-                                          ),
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Consumer(
+                          builder: (context, ref, child) {
+                            // Get the user's profile image URL from the state
+                            final image = ref.read(userDataList.notifier).image;
+                            // Set the imgUrl ValueNotifier to the retrieved image URL, or an empty string if no image is available
+                            imgUrl.value = image ?? "";
+                            return Center(
+                              child: Stack(
+                                children: [
+                                  ClipOval(
+                                    child: SizedBox.fromSize(
+                                      size: Size.fromRadius(50.w), // Image radius
+                                      child: CachedNetworkImage(
+                                        imageUrl: image ?? "", // Display the user's profile image or a default icon
+                                        fit: BoxFit.cover,
+                                        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                                          child: CircularProgressIndicator(value: downloadProgress.progress),
+                                        ),
+                                        errorWidget: (context, url, error) => Icon(
+                                          Icons.account_circle_outlined, // Display this icon if there's an error loading the image
+                                          size: 78.h,
+                                          color: ColorManager.greyColor,
                                         ),
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 15.r),
-                        child: PrimaryTextFilled(
-                          // focusNode: _focus,
-                          readOnly: value,
-                          controller: _userNameCtrl,
-                          textCapitalization: TextCapitalization.sentences,
-                          hintText: "Enter userName",
-                          labelText: "UserName",
-                          prefixIcon: const Icon(
-                            Icons.text_format_rounded,
-                            color: ColorManager.gradientDarkTealColor,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 15.r),
-                        child: PrimaryTextFilled(
-                          readOnly: value,
-                          controller: _emailCtrl,
-                          hintText: "Enter Email",
-                          labelText: "Email",
-                          prefixIcon: const Icon(
-                            Icons.email_rounded,
-                            color: ColorManager.gradientDarkTealColor,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 15.r),
-                        child: PrimaryTextFilled(
-                          readOnly: value,
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: _bioCtrl,
-                          hintText: "Enter Bio",
-                          labelText: "Bio",
-                          prefixIcon: const Icon(
-                            Icons.note_alt_rounded,
-                            color: ColorManager.gradientDarkTealColor,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ),
-                      Visibility(
-                        visible: !editProfile.value,
-                        child: PrimaryButton(
-                          title: "Update Profile",
-                          onTap: () async {
-                            editProfile.value = true;
-                            ref.read(userDataList.notifier).update(
-                              data: {
-                                "id": UserPreferences.userId,
-                                "userName": _userNameCtrl.text.trim(),
-                                "email": _emailCtrl.text.trim(),
-                                "bio": _bioCtrl.text.trim(),
-                                "profileUrl": imgUrl.value
-                              },
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Visibility(
+                                      visible: !value,
+                                      child: CircleAvatar(
+                                        radius: 17.r,
+                                        child: IconButton(
+                                          onPressed: () async {
+                                            // Open the image picker to select a new profile image
+                                            await picker.pickImage(source: ImageSource.gallery).then((image) async {
+                                              if (image != null) {
+                                                loading(context);
+                                                setState(() {
+                                                  imageFile = File(image.path); // Set the selected image file
+                                                });
+                                                // Upload the selected image to Firebase Storage
+                                                final imageUrl = await uploadImage();
+                                                // Set the imgUrl ValueNotifier to the newly uploaded image URL
+                                                imgUrl.value = imageUrl;
+                                                Navigator.pop(context); // Close the loading indicator
+                                              }
+                                            });
+                                          },
+                                          icon: Center(
+                                            child: Icon(
+                                              Icons.camera,
+                                              size: 18.h,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             );
-                            buildShowToast(toastMessage: "Profile Update Successfully");
-                            Navigator.pop(context);
                           },
                         ),
-                      ),
-                    ],
+
+                        Padding(
+                          padding: EdgeInsets.only(top: 15.r),
+                          child: PrimaryTextFilled(
+                            readOnly: value,
+                            controller: _userNameCtrl,
+                            textCapitalization: TextCapitalization.sentences,
+                            hintText: "Enter userName",
+                            labelText: "UserName",
+                            prefixIcon: const Icon(
+                              Icons.text_format_rounded,
+                              color: ColorManager.gradientDarkTealColor,
+                            ),
+                            validator: (p0) {
+                              if (p0 == null || p0.isEmpty) {
+                                return 'Enter UserName';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 15.r),
+                          child: PrimaryTextFilled(
+                            readOnly: value,
+                            controller: _emailCtrl,
+                            hintText: StringManager.emailHintTxt,
+                            labelText: StringManager.emailLabelTxt,
+                            prefixIcon: const Icon(
+                              Icons.email_rounded,
+                              color: ColorManager.gradientDarkTealColor,
+                            ),
+                            validator: (p0) {
+                              if (p0 == null || p0.isEmpty) {
+                                return StringManager.emailHintTxt;
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 15.r),
+                          child: PrimaryTextFilled(
+                            readOnly: value,
+                            textCapitalization: TextCapitalization.sentences,
+                            controller: _bioCtrl,
+                            hintText: "Enter Bio",
+                            labelText: "Bio",
+                            prefixIcon: const Icon(
+                              Icons.note_alt_rounded,
+                              color: ColorManager.gradientDarkTealColor,
+                            ),
+                            validator: (p0) {
+                              if (p0 == null || p0.isEmpty) {
+                                return 'Enter Bio';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Visibility(
+                          visible: !editProfile.value,
+                          child: PrimaryButton(
+                            title: "Update Profile",
+                            onTap: () async {
+                              if(_formKey.currentState!.validate()){
+                                editProfile.value = true;
+                                ref.read(userDataList.notifier).update(
+                                  data: {
+                                    ApiRequestBody.apiId: UserPreferences.userId,
+                                    ApiRequestBody.apiUserName: _userNameCtrl.text.trim(),
+                                    ApiRequestBody.apiEmail: _emailCtrl.text.trim(),
+                                    ApiRequestBody.apiBio: _bioCtrl.text.trim(),
+                                    ApiRequestBody.apiProfileUrl: imgUrl.value
+                                  },
+                                );
+                                buildShowToast(toastMessage: "Profile Update Successfully");
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
