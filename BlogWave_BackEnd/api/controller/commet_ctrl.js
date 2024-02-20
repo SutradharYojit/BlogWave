@@ -30,7 +30,6 @@ const addComment =  (req, res, next) => {
                         updatedAt: userData.updatedAt
                     }
                 };
-
                 // Send a response with a status code of 201 (created) and the merged data.
                 return res.status(201).json([mergedData]);
             });
@@ -46,7 +45,6 @@ const getComment = (req, res, next) => {
     commentModel.findAll({ where: { blogId: req.body.blogId }, include: userModel }).then((comment) => {
         // Fetch comments related to a specific blog entry based on the provided blogId.
         // The `include: userModel` option includes user information associated with each comment.
-
         // Reverse the order of comments (e.g., from oldest to newest).
         return res.status(200).json(comment.reverse());
     }).catch(err => {

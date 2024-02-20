@@ -12,3 +12,4 @@ router.post('/login', userCtrl.loginUser);
 router.post('/checkToken', checkToken);
 
 module.exports = router;
+

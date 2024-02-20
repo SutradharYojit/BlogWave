@@ -8,7 +8,6 @@ const signUpUser = (req, res, next) => {
         console.log(count);
         if (count > 0) {
             return res.status(403).json({ message: "User Alredy Exist", success: false });
-
         } else {
             try {
                 bcrypt.hash(body.password, 10, function l̥(err, hash) {
