@@ -20,7 +20,6 @@ const blogTable = sqConnect.define('blogs', {
     },
     categories: {
         type: Sequelize.TEXT,
-        allowNull: false
     },
     tags: {
         type: Sequelize.ARRAY(Sequelize.TEXT),
