@@ -32,7 +32,9 @@ const getproject = (req, res, next) => {
 };
 
 const userProject = (req, res, next) => {
-    projectModel.findAll({ where: { userId: req.body.id } }).then((project) => {
+
+    const userId = req.params.userId;
+    projectModel.findAll({ where: { userId: userId } }).then((project) => {
         // Retrieve all project entries from the database where the userId matches the provided ID.
         return res.status(200).json(project.reverse());
         // Respond with a JSON array of project entries (in reverse order) and a status code of 200 (OK).
@@ -64,8 +66,9 @@ const updateProject = async (req, res, next) => {
 };
 
 const deleteProject = async (req, res, next) => {
+    const projectId = req.params.projectId;
     try {
-        await projectModel.destroy({ where: { id: req.body.id } })
+        await projectModel.destroy({ where: { id: projectId } })
             // Attempt to delete the project entry from the database based on the provided project ID.
             .then(() => {
                 return res.status(201).json({ message: "Project Delete successfully" });

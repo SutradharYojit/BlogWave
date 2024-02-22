@@ -58,8 +58,9 @@ const updateBlogs = async (req, res, next) => {
 
 
 const deleteBlogs = async (req, res, next) => {
+    const blogId = req.params.blogId;
     try {
-        await blogModel.destroy({ where: { id: req.body.id } })
+        await blogModel.destroy({ where: { id: blogId } })
             .then(() => {
                 // If the blog entry is successfully deleted, send a response with a status code of 201 (created) and a success message.
                 return res.status(201).json({ message: "Data Delete successfully" });
@@ -73,4 +74,4 @@ const deleteBlogs = async (req, res, next) => {
 
 
 
-module.exports = { createBlog, getBlog ,updateBlogs,deleteBlogs};
+module.exports = { createBlog, getBlog, updateBlogs, deleteBlogs };

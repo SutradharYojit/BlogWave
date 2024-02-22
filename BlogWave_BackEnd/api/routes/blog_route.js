@@ -12,6 +12,6 @@ router.get('/getBlogs', checkAuth, blogCtrl.getBlog);
 router.post('/updateBlog',checkAuth,blogCtrl.updateBlogs );
 
 // Api Delete Blog
-router.delete('/deleteBlog',checkAuth, blogCtrl.deleteBlogs);
+router.delete('/deleteBlog/:blogId',checkAuth, blogCtrl.deleteBlogs);
 
 module.exports = router;
